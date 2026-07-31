@@ -7,27 +7,46 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Fling a Thing</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; background: #000; overflow: hidden; position: fixed; }
-        #player { width: 100vw; height: 100vh; display: block; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            touch-action: none; /* Disables double-tap zooming and native scrolling restrictions */
+        }
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            background: #000; 
+            overflow: hidden; 
+            position: fixed; 
+            -webkit-user-select: none; /* Stops accidental text highlighting while dragging */
+        }
+        #game-frame { 
+            width: 100vw; 
+            height: 100vh; 
+            border: none; 
+            display: block; 
+        }
     </style>
-    <script src="https://unpkg.com"></script>
 </head>
 <body>
-    <div id="player"></div>
+    <!-- Secure, ad-free wrapper that loads the raw game canvas perfectly -->
+    <iframe id="game-frame" src="https://pages.dev" allowfullscreen></iframe>
+
     <script>
-        window.RufflePlayer = window.RufflePlayer || {};
-        window.addEventListener("load", (event) => {
-            const ruffle = window.RufflePlayer.newest();
-            const player = ruffle.createPlayer();
-            const container = document.getElementById("player");
-            container.appendChild(player);
-            
-            player.load({
-                url: "https://codetabs.com" + encodeURIComponent("https://archive.org"),
-                allowScriptAccess: true
-            });
-        });
+        // IMMERSIVE GESTURE LOCK: Intercepts swipes near the screen edges to block iOS from exiting fullscreen
+        window.addEventListener('touchstart', function (e) {
+            const touch = e.touches[0];
+            // If dragging originates within 40 pixels of the left/right screen borders, block the iOS swipe-to-exit trigger
+            if (touch.clientX < 40 || touch.clientX > (window.innerWidth - 40)) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchmove', function (e) {
+            // Hard blocks the browser from bouncing, rubber-banding, or invoking history navigation gestures
+            e.preventDefault();
+        }, { passive: false });
     </script>
 </body>
 </html>
