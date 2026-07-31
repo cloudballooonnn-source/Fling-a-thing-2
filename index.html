@@ -9,14 +9,27 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; background: #000; overflow: hidden; position: fixed; }
-        #player-container { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        iframe { width: 100%; height: 100%; border: none; }
+        #player { width: 100vw; height: 100vh; display: block; }
     </style>
+    <!-- Loads the standalone Ruffle Web Assembly engine directly into your app -->
+    <script src="https://unpkg.com"></script>
 </head>
 <body>
-    <div id="player-container">
-        <!-- Loads a premium, ad-free emulator layout that strips away all arcade website clutter -->
-        <iframe src="https://pages.dev" allowfullscreen></iframe>
-    </div>
+    <div id="player"></div>
+    <script>
+        window.RufflePlayer = window.RufflePlayer || {};
+        window.addEventListener("load", (event) => {
+            const ruffle = window.RufflePlayer.newest();
+            const player = ruffle.createPlayer();
+            const container = document.getElementById("player");
+            container.appendChild(player);
+            
+            // Streams the game binary layout through an open CORS proxy pipeline
+            player.load({
+                url: "https://allorigins.win" + encodeURIComponent("https://archive.org"),
+                allowScriptAccess: true
+            });
+        });
+    </script>
 </body>
 </html>
